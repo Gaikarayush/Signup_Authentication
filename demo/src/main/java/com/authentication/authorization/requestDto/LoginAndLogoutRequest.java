@@ -1,4 +1,4 @@
-package requestDto;
+package com.authentication.authorization.requestDto;
 
 public class LoginAndLogoutRequest {
 	

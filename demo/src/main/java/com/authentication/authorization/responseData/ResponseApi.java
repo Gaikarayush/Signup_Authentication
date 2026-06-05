@@ -1,4 +1,4 @@
-package responseData;
+package com.authentication.authorization.responseData;
 
 public class ResponseApi {
 	 private String message;

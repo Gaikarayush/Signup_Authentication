@@ -1,9 +1,10 @@
-package repository;
+package com.authentication.authorization.repository;
 
+import com.authentication.authorization.entity.LoginAndLogout;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import entity.LoginAndLogout;
+
 
 @Repository
 public interface LoginAndLogoutRepo extends JpaRepository<LoginAndLogout, Long>{

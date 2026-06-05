@@ -1,16 +1,17 @@
-package implementation;
+package com.authentication.authorization.implementation;
 
 
+import com.authentication.authorization.entity.LoginAndLogout;
+import com.authentication.authorization.repository.LoginAndLogoutRepo;
+import com.authentication.authorization.requestDto.LoginAndLogoutRequest;
+import com.authentication.authorization.service.loginAndLogoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import entity.LoginAndLogout;
-import repository.LoginAndLogoutRepo;
-import requestDto.LoginAndLogoutRequest;
-import service.loginAndLogoutService;
+
 
 @Service
-public class loginAndLogoutImpl implements loginAndLogoutService{
+public class loginAndLogoutImpl implements loginAndLogoutService {
 	
 	@Autowired
 	private LoginAndLogoutRepo loginAndLogoutRepo;
