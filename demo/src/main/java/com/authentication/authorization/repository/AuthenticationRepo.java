@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuthenticationRepo extends JpaRepository<AuthenticationEntity, Long>{
 	
-	AuthenticationEntity findByUserName(String userName);
-	AuthenticationEntity findByUserpassword(String userPassword);
+//	AuthenticationEntity findByUserName(String userName);
+//	AuthenticationEntity findByUserpassword(String userPassword);
+
+	Boolean existsByEmailId(String emailId);
 
 }
