@@ -1,13 +1,14 @@
 package com.authentication.authorization.service;
 
 
-import com.authentication.authorization.dto.requestDto.AuthenticationSignUpRequest;
+import com.authentication.authorization.dto.requestDto.SignInRequest;
+import com.authentication.authorization.dto.requestDto.SignUpRequest;
 import com.authentication.authorization.entity.AuthenticationEntity;
 //import com.authentication.authorization.dto.requestDto.AuthenticationSignInRequest;
 
 public interface AuthenticationService {
 	
-//	AuthenticationEntity addUser(AuthenticationSignInRequest loginAndLogout);
+	AuthenticationEntity userSignIn(SignInRequest loginAndLogout);
 
-	AuthenticationEntity userSignUp(AuthenticationSignUpRequest authenticationSignUpRequest);
+	AuthenticationEntity userSignUp(SignUpRequest signUpRequest);
 }
