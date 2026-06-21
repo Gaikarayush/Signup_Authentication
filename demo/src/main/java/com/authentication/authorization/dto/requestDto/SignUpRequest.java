@@ -2,7 +2,7 @@ package com.authentication.authorization.dto.requestDto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class AuthenticationSignUpRequest {
+public class SignUpRequest {
 
     @NotBlank
     private String firstName;
