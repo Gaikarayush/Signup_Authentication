@@ -1,27 +1,37 @@
 package com.authentication.authorization.apiResponse;
 
-public class ResponseApi {
+public class ResponseApi<T> {
 	 private String message;
 	 private boolean success;
+	 private T data;
+
+	public ResponseApi(String message, boolean success, T data) {
+		this.message = message;
+		this.success = success;
+		this.data = data;
+	}
+
 	public String getMessage() {
 		return message;
 	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
 	public boolean isSuccess() {
 		return success;
 	}
+
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
-	public ResponseApi(String message, boolean success) {
-		super();
-		this.message = message;
-		this.success = success;
+
+	public T getData() {
+		return data;
 	}
-	
-	
-	    
-	    
+
+	public void setData(T data) {
+		this.data = data;
+	}
 }

@@ -1,4 +1,4 @@
-package com.authentication.authorization.dto.requestDto;
+package com.authentication.authorization.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

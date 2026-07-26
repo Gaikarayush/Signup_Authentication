@@ -1,14 +1,18 @@
 package com.authentication.authorization.service;
 
 
-import com.authentication.authorization.dto.requestDto.SignInRequest;
-import com.authentication.authorization.dto.requestDto.SignUpRequest;
+import com.authentication.authorization.dto.request.SignInRequest;
+import com.authentication.authorization.dto.request.SignUpRequest;
+import com.authentication.authorization.dto.response.UserResponse;
 import com.authentication.authorization.entity.AuthenticationEntity;
+import org.springframework.data.domain.Page;
 //import com.authentication.authorization.dto.requestDto.AuthenticationSignInRequest;
 
 public interface AuthenticationService {
-	
-	AuthenticationEntity userSignIn(SignInRequest loginAndLogout);
 
-	AuthenticationEntity userSignUp(SignUpRequest signUpRequest);
+	UserResponse userSignIn(SignInRequest loginAndLogout);
+
+	UserResponse userSignUp(SignUpRequest signUpRequest);
+
+	Page<AuthenticationEntity> getUsers(Integer page, Integer size, String sortBy);
 }

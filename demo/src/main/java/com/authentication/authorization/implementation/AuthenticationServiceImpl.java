@@ -2,13 +2,25 @@ package com.authentication.authorization.implementation;
 
 import static org.springframework.util.StringUtils.*;
 
-import com.authentication.authorization.dto.requestDto.SignInRequest;
-import com.authentication.authorization.dto.requestDto.SignUpRequest;
+import com.authentication.authorization.dto.request.SignInRequest;
+import com.authentication.authorization.dto.request.SignUpRequest;
+import com.authentication.authorization.dto.response.UserResponse;
 import com.authentication.authorization.entity.AuthenticationEntity;
+import com.authentication.authorization.exception.userauthentication.EmailAlreadyExistsException;
+import com.authentication.authorization.exception.userauthentication.InvalidCredentialException;
+import com.authentication.authorization.exception.userauthentication.PasswordDoesNotMatchException;
+import com.authentication.authorization.exception.userauthentication.UserNotFoundException;
+import com.authentication.authorization.mapper.EntityToRequest;
+import com.authentication.authorization.mapper.RequestToEntity;
 import com.authentication.authorization.repository.AuthenticationRepo;
 //import com.authentication.authorization.dto.requestDto.AuthenticationSignInRequest;
 import com.authentication.authorization.service.AuthenticationService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +37,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public AuthenticationEntity userSignIn(SignInRequest signInRequest) {
+    public UserResponse userSignIn(SignInRequest signInRequest) {
         // TODO Auto-generated method stub
+
         String loginEmailId = signInRequest.getEmailId();
 
 //		if(emailId.contains("@") || emailId.matches("\\d{10}")) {if(loginEmailId.contains("@")) {
         AuthenticationEntity authenticationEntity =
                 authenticationRepo.findByEmailIdAndUserStatus(loginEmailId, 'Y')
                         .orElseThrow(() ->
-                                new IllegalArgumentException("No such user found, please Sign-up")
+                                new UserNotFoundException("No such user found, please Sign-up")
                         );
 
         String userPassword = authenticationEntity.getPassword();
@@ -41,45 +54,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         boolean isPasswordValid = passwordEncoder.matches(signInRequest.getPassword(), userPassword);
 
         if(!isPasswordValid){
-            throw new IllegalArgumentException("Invalid Credentials");
+            throw new InvalidCredentialException("Invalid Credentials");
         }
-        return null;
+        return EntityToRequest.mapToUserResponse(authenticationEntity);
 
     }
 
 
-    public AuthenticationEntity userSignUp(SignUpRequest signUpRequest) {
+    public UserResponse userSignUp(SignUpRequest signUpRequest) {
 
         boolean exists = false;
         if (hasText(signUpRequest.getEmailId())) {
             exists = authenticationRepo.existsByEmailId(signUpRequest.getEmailId());
         }
         if (exists) {
-            throw new IllegalArgumentException("Email id already exists");
+            throw new EmailAlreadyExistsException("Email id already exists");
         }
         if (hasText(signUpRequest.getConfirmPassword()) &&
                 hasText(signUpRequest.getPassword()) &&
                 !signUpRequest.getConfirmPassword().equals(signUpRequest.getPassword())) {
-            throw new IllegalArgumentException("Password is not matching");
+            throw new PasswordDoesNotMatchException("Password is not matching");
         }
 
-        AuthenticationEntity entity = convertToSignUpEntity(signUpRequest);
+        AuthenticationEntity entity = RequestToEntity.mapToAuthenticationEntity(signUpRequest);
+        AuthenticationEntity savedEntity = authenticationRepo.save(entity);
+        return EntityToRequest.mapToUserResponse(savedEntity);
+    }
 
-        return authenticationRepo.save(entity);
+    //Need to create an proper pagination logic to remove unnecessary Page MetaData and also
+    //Create an Request to build listing in which proper page, size, etc fields will present...... !!!!!!
+    @Override
+    public Page<AuthenticationEntity> getUsers(Integer page, Integer size, String sortBy) {
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by(sortBy));
+
+        return authenticationRepo.findByUserStatus('Y', pageable);
     }
 
 
-    private AuthenticationEntity convertToSignUpEntity(SignUpRequest signUpRequest) {
-        return AuthenticationEntity.builder()
-                .firstName(signUpRequest.getFirstName())
-                .lastName(signUpRequest.getLastName())
-                .mobileNumber(signUpRequest.getMobileNumber())
-                .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                .emailId(signUpRequest.getEmailId())
-                .createdAt(new Date())
-                .updatedAt(new Date())
-                .userStatus('Y')
-                .build();
-    }
+
+
+
+
+
 
 }

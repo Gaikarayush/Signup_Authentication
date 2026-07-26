@@ -3,16 +3,16 @@ package com.authentication.authorization.controller;
 //import com.authentication.authorization.dto.requestDto.AuthenticationSignInRequest;
 
 import com.authentication.authorization.apiResponse.ResponseApi;
-import com.authentication.authorization.dto.requestDto.SignInRequest;
-import com.authentication.authorization.dto.requestDto.SignUpRequest;
+import com.authentication.authorization.dto.request.SignInRequest;
+import com.authentication.authorization.dto.request.SignUpRequest;
+import com.authentication.authorization.dto.response.UserResponse;
+import com.authentication.authorization.entity.AuthenticationEntity;
 import com.authentication.authorization.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -23,27 +23,32 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/signin")
-    public ResponseEntity<ResponseApi> login(@RequestBody SignInRequest loginAndLogout) {
-//		ResponseEntity responseEntity = new ResponseEntity(null);
-        ResponseApi response = null;
-        authenticationService.userSignIn(loginAndLogout);
-        response = new ResponseApi("User login successfully", true);
+    public ResponseEntity<ResponseApi<UserResponse>> login(@RequestBody SignInRequest loginAndLogout) {
 
+        UserResponse user = authenticationService.userSignIn(loginAndLogout);
+            ResponseApi<UserResponse> response = new ResponseApi<>("User login successfully", true, user);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseApi> signup(@RequestBody SignUpRequest signUpRequest) {
-        ResponseApi responseApi = null;
+    public ResponseEntity<ResponseApi<UserResponse>> signup(@RequestBody SignUpRequest signUpRequest) {
 
-        try {
-            authenticationService.userSignUp(signUpRequest);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        responseApi = new ResponseApi("User created successfully", true);
+        UserResponse user = authenticationService.userSignUp(signUpRequest);
+
+         ResponseApi<UserResponse> responseApi = new ResponseApi<>("User created successfully", true, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseApi);
+    }
+
+
+    @GetMapping("/users")
+    public ResponseEntity<ResponseApi<Page<AuthenticationEntity>>> getUsers (@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "userId", required = false) String sortBy){
+
+        Page<AuthenticationEntity> users = authenticationService.getUsers(page, size, sortBy);
+
+        ResponseApi<Page<AuthenticationEntity>> response = new ResponseApi<>("Users Fetched Successfully", true, users);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.authentication.authorization.dto.requestDto;
+package com.authentication.authorization.dto.request;
 
 import com.authentication.authorization.annotation.ValidUserName;
 import jakarta.validation.constraints.Email;
