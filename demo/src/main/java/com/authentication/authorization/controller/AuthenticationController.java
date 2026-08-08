@@ -5,6 +5,7 @@ package com.authentication.authorization.controller;
 import com.authentication.authorization.apiResponse.ResponseApi;
 import com.authentication.authorization.dto.request.SignInRequest;
 import com.authentication.authorization.dto.request.SignUpRequest;
+import com.authentication.authorization.dto.request.UpdateUser;
 import com.authentication.authorization.dto.response.UserResponse;
 import com.authentication.authorization.entity.AuthenticationEntity;
 import com.authentication.authorization.service.AuthenticationService;
@@ -41,7 +42,7 @@ public class AuthenticationController {
     }
 
 
-    @GetMapping("/users")
+    @GetMapping("/listing")
     public ResponseEntity<ResponseApi<Page<AuthenticationEntity>>> getUsers (@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "userId", required = false) String sortBy){
 
         Page<AuthenticationEntity> users = authenticationService.getUsers(page, size, sortBy);
@@ -51,4 +52,9 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseApi<AuthenticationEntity>> updateUser (@PathVariable Integer userId, @RequestParam UpdateUser updateUser){
+
+
+    }
 }
