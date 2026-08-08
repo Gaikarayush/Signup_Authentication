@@ -20,6 +20,6 @@ public interface AuthenticationRepo extends JpaRepository<AuthenticationEntity, 
 
 	Page<AuthenticationEntity> findByUserStatus(Character status, Pageable pageable);
 
-	Optional<AuthenticationEntity> findByUserIdAndStatus(Integer userId, Character status);
+	Optional<AuthenticationEntity> findByUserIdAndUserStatus(Integer userId, Character status);
 
 }

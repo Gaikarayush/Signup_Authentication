@@ -26,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -87,38 +88,81 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     //Need to create an proper pagination logic to remove unnecessary Page MetaData and also
     //Create an Request to build listing in which proper page, size, etc fields will present...... !!!!!!
     @Override
-    public Page<AuthenticationEntity> getUsers(UserListingRequest userListingRequest) {
+    public Page<UserResponse> getUsers(UserListingRequest userListingRequest) {
         String sort = userListingRequest.getSortBy();
         if(userListingRequest.getSortBy().isEmpty()){
             sort = "userId";
         }
         Pageable pageable = PageRequest.of(userListingRequest.getPage()-1, userListingRequest.getSize(), Sort.by(sort));
 
-        return authenticationRepo.findByUserStatus('Y', pageable);
+        Page<AuthenticationEntity> entity =  authenticationRepo.findByUserStatus('Y', pageable);
+        return entity.map(authenticationEntity -> UserResponse.builder()
+                .userId(authenticationEntity.getUserId())
+                .firstName(authenticationEntity.getFirstName())
+                .lastName(authenticationEntity.getLastName())
+                .mobileNumber(authenticationEntity.getMobileNumber())
+                .emailId(authenticationEntity.getEmailId())
+                .build());
     }
 
     @Override
     public UserResponse updateUser(Integer userId, UpdateUser updateUser) {
-        Optional<AuthenticationEntity> user;
-        if(userId!=null){
-            user = authenticationRepo.findByUserIdAndStatus(userId, 'Y');
-        }else {
+
+        Optional<AuthenticationEntity> user =
+                authenticationRepo.findByUserIdAndUserStatus(userId, 'Y');
+
+        if (user.isEmpty()) {
             throw new UserNotFoundException("No such user found");
         }
-        AuthenticationEntity existingUser = null;
-        if(user.isPresent()){
-            existingUser = user.get();
-            existingUser.builder().
-                    firstName(updateUser.getFirstName()).
-                    lastName(updateUser.getLastName()).
-                    emailId(updateUser.getEmailId()).
-                    password(updateUser.getPassword()).
-                    updatedAt(new Date()).
-                    mobileNumber(updateUser.getMobileNumber()).
-                    build();
+
+        AuthenticationEntity existingUser = user.get();
+        if(updateUser.getFirstName()!=null && !updateUser.getFirstName().isEmpty()){
+            existingUser.setFirstName(updateUser.getFirstName());
+        }
+        if(updateUser.getLastName()!=null && !updateUser.getLastName().isEmpty()){
+            existingUser.setLastName(updateUser.getLastName());
+        }
+        if(updateUser.getEmailId()!=null && !updateUser.getEmailId().isEmpty()){
+            existingUser.setEmailId(updateUser.getEmailId());
+        }
+        if((updateUser.getPassword()!=null && !updateUser.getPassword().isEmpty()) && (updateUser.getConfirmPassword()!=null && !updateUser.getConfirmPassword().isEmpty())){
+            if(updateUser.getPassword().equals(updateUser.getConfirmPassword())){
+                existingUser.setPassword(updateUser.getPassword());
+            }else{
+                throw new PasswordDoesNotMatchException("Password does not Match");
+            }
         }
 
-        return new EntityToRequest(existingUser);
+        existingUser.setUpdatedAt(LocalDateTime.now());
+        if(updateUser.getMobileNumber()!=null && updateUser.getMobileNumber() > 0){
+            existingUser.setMobileNumber(updateUser.getMobileNumber());
+        }
+
+        AuthenticationEntity updatedUser =
+                authenticationRepo.save(existingUser);
+
+        return EntityToRequest.mapToUserResponse(updatedUser);
+    }
+
+    @Override
+    public void deleteUser(Integer userId) {
+
+        if (userId == null) {
+            throw new UserNotFoundException("No such user found");
+        }
+
+        Optional<AuthenticationEntity> user =
+                authenticationRepo.findByUserIdAndUserStatus(userId, 'Y');
+
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("No such user found");
+        }
+
+        AuthenticationEntity existingUser = user.get();
+        existingUser.setUserStatus('N');
+        existingUser.setUpdatedAt(LocalDateTime.now());
+        authenticationRepo.save(existingUser);
+
     }
 
 

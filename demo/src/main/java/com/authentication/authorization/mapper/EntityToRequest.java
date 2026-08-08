@@ -5,7 +5,6 @@ import com.authentication.authorization.entity.AuthenticationEntity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
 public class EntityToRequest {
 

@@ -5,6 +5,7 @@ import com.authentication.authorization.entity.AuthenticationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class RequestToEntity {
@@ -17,8 +18,8 @@ public class RequestToEntity {
                 .lastName(signUpRequest.getLastName())
                 .mobileNumber(signUpRequest.getMobileNumber())
                 .emailId(signUpRequest.getEmailId())
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .userStatus('Y')
                 .build();
     }

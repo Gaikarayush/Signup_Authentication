@@ -19,7 +19,9 @@ public interface AuthenticationService {
 
 	//Need to create an proper pagination logic to remove unnecessary Page MetaData and also
 	//Create an Request to build listing in which proper page, size, etc fields will present...... !!!!!!
-	Page<AuthenticationEntity> getUsers(UserListingRequest userListingRequest);
+	Page<UserResponse> getUsers(UserListingRequest userListingRequest);
 
 	UserResponse updateUser(Integer userId, UpdateUser updateUser);
+
+	void deleteUser(Integer userId);
 }
