@@ -16,12 +16,4 @@ public class SignInRequest {
 	private String emailId;
 	private String password;
 
-
-    public void setPassword(String password) {
-		this.password = password;
-	}
-
-    public void setEmailId(String emailId) {
-        this.emailId = emailId;
-    }
 }

@@ -4,6 +4,7 @@ import static org.springframework.util.StringUtils.*;
 
 import com.authentication.authorization.dto.request.SignInRequest;
 import com.authentication.authorization.dto.request.SignUpRequest;
+import com.authentication.authorization.dto.request.UserListingRequest;
 import com.authentication.authorization.dto.request.UpdateUser;
 import com.authentication.authorization.dto.response.UserResponse;
 import com.authentication.authorization.entity.AuthenticationEntity;
@@ -16,6 +17,7 @@ import com.authentication.authorization.mapper.RequestToEntity;
 import com.authentication.authorization.repository.AuthenticationRepo;
 //import com.authentication.authorization.dto.requestDto.AuthenticationSignInRequest;
 import com.authentication.authorization.service.AuthenticationService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -85,8 +87,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     //Need to create an proper pagination logic to remove unnecessary Page MetaData and also
     //Create an Request to build listing in which proper page, size, etc fields will present...... !!!!!!
     @Override
-    public Page<AuthenticationEntity> getUsers(Integer page, Integer size, String sortBy) {
-        Pageable pageable = PageRequest.of(page-1, size, Sort.by(sortBy));
+    public Page<AuthenticationEntity> getUsers(UserListingRequest userListingRequest) {
+        String sort = userListingRequest.getSortBy();
+        if(userListingRequest.getSortBy().isEmpty()){
+            sort = "userId";
+        }
+        Pageable pageable = PageRequest.of(userListingRequest.getPage()-1, userListingRequest.getSize(), Sort.by(sort));
 
         return authenticationRepo.findByUserStatus('Y', pageable);
     }
